@@ -2,8 +2,7 @@ import numpy as np
 import cv2, time
 
 cv2.namedWindow("Camera")
-gst_cap = 'nvarguscamerasrc sensor_mode=0 ! video/x-raw(memory:NVMM),width=3820, height=2464, framerate=21/1, format=NV12 ! nvvidconv  ! video/x-raw, format=BGRx, width=960, height=616 ! videoconvert ! video/x-raw, format=BGR ! appsink'
-cap = cv2.VideoCapture(gst_cap, cv2.CAP_GSTREAMER)
+cap = cv2.VideoCapture('/dev/video0', cv2.CAP_V4L)
 
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)

@@ -16,12 +16,11 @@ list_cb_2d_img_points = []
 
 list_images = glob.glob("./images/*.jpg")
 
-for frame_name in   list_images:
+for frame_name in list_images:
     img = cv.imread(frame_name)
     gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
 
     ret, corners = cv.findChessboardCorners(gray, (9,6), None)
-
 
     if ret == True:
         list_cb_3d_points.append(cb_3d_points)
@@ -37,10 +36,11 @@ cv.destroyAllWindows()
 
 ret, mtx, dist, revcs, tvecs = cv.calibrateCamera(list_cb_3d_points, list_cb_2d_img_points, gray.shape[:: -1 ], None, None)
 
-print("Calibration Matrix: ")
+print("Camera matrix : \n")
 print(mtx)
-print("distortion: ", dist)
-
-with open('camera_cal.npy', 'wb') as f:
-    np.save(f, mtx)
-    np.save(f, dist)
+print("dist : \n")
+print(dist)
+print("rvecs : \n")
+print(rvecs)
+print("tvecs : \n")
+print(tvecs)

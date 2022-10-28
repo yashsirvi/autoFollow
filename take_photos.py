@@ -19,20 +19,21 @@ while True:
 
 	frame_count +=1
 
-	if frame_coutn == 30:
+	if frame_count == 30:
 		cv2.imwrite("./images/cal_image_" + str(cal_image_count)+".jpg", frame)
 		cal_image_count += 1
 		frame_count = 0
 
-	new_frame_time = time.time()
+	now_frame_time = time.time()
 	fps = 1/(now_frame_time - prev_frame_time)
 	prev_frame_time = now_frame_time
-	cv2.putText(frame, "FPS"m str(int(fps), (10,40),cv2.FONT_HERSHEY_PLAIN, 3, (100, 255, 0), 2, cv2.LINE_AA)
+	cv2.putText(frame, "FPS" + str(int(fps)), (10,40),cv2.FONT_HERSHEY_PLAIN, 3, (100, 255, 0), 2, cv2.LINE_AA)
 
 	cv2.imshow("Camera", frame)
 
 	key = cv2.waitKey(1) & 0xFF
-	if key == ord("q"): break
+	if key == ord("q"): 
+		break
 
 cap.release()
 cv2.destroyAllWindows()

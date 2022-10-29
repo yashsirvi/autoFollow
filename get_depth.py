@@ -8,10 +8,14 @@ import pandas as p
 aruco_dict = aruco.Dictionary_get(aruco.DICT_6X6_250)
 arucoParams = aruco.DetectorParameters_create()
 
-vid = cv2.VideoCapture(0)
+vid = cv2.VideoCapture("/dev/video0", cv2.CAP_V4L)
 
-mtx = np.array([[1430, 0, 480], [0, 1430, 620], [0, 0, 1]])
-distCoeff = np.array([0.253336, 0.102445, 0, 0, 0])
+mtx = [
+    [601.84426834, 0.0, 314.74648445],
+    [0.0, 601.45312377, 244.07136337],
+    [0.0, 0.0, 1.0],
+]
+distCoeff = [[0.08850378, -0.67093912, 0.00148015, -0.00494215, 1.0822998]]
 goals = []
 while True:
     ret, frame = vid.read()
@@ -35,4 +39,3 @@ plt.plot(goals)
 plt.show()
 vid.release()
 cv2.destroyAllWindows()
-

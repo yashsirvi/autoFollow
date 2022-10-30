@@ -2,7 +2,7 @@ import numpy as np
 import cv2, time
 
 cv2.namedWindow("Camera")
-cap = cv2.VideoCapture('/dev/video0', cv2.CAP_V4L)
+cap = cv2.VideoCapture(0)
 
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
@@ -26,7 +26,7 @@ while True:
 	now_frame_time = time.time()
 	fps = 1/(now_frame_time - prev_frame_time)
 	prev_frame_time = now_frame_time
-	cv2.putText(frame, "FPS" + str(int(fps)), (10,40),cv2.FONT_HERSHEY_PLAIN, 3, (100, 255, 0), 2, cv2.LINE_AA)
+	cv2.putText(frame, "FPS" + str(int(fps)), (10,40),cv2.FONT_HERSHEY_PLAIN, 3, (100, 2))
 
 	cv2.imshow("Camera", frame)
 

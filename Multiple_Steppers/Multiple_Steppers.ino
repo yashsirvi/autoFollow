@@ -41,18 +41,24 @@ void setup() {
   // Set the maximum speed and acceleration:
    for(int i = 0; i < numSteppers; i++){
         steppers[i]->setMaxSpeed(SPEED);
-        steppers[i]->setAcceleration(ACCELARATION);
+        steppers[i]->setAcceleration(ACCELERATION);
     }
 }
 
 void loop() {
   // random test
-  for(int i=0;i<10;i++){
-    moveToPos(1,1+i,0);
-  }
+//   for(int i=0;i<10;i++){
+//     moveToPos(1,1+i,0);
+//   }
+      moveToPos(1,1,0);
+      delay(1000);
+      for(int i = 0; i < numSteppers; i++){
+        steppers[i]->stop();
+    }
 }
 
 float VtoSPS(float v){
+
   // steps/sec *  0.03 = rpm 
   // rpm * 2pir(cm)/60 = velocity (cm/s)
 
@@ -69,10 +75,10 @@ void moveToPos(float x, float y, float w){
   float v3 = (+sqrt(2)*x-sqrt(2)*y+w)/4;
   float v4 = (sqrt(2)*x+sqrt(2)*y+w)/4;
 
-  s1 = VtoSPS(v1);
-  s2 = VtoSPS(v2);
-  s3 = VtoSPS(v3);
-  s4 = VtoSPS(v4);
+  float s1 = VtoSPS(v1);
+  float s2 = VtoSPS(v2);
+  float s3 = VtoSPS(v3);
+  float s4 = VtoSPS(v4);
 
   stepper1.setSpeed(s1);
   stepper2.setSpeed(s2);

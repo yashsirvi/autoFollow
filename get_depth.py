@@ -1,9 +1,6 @@
 import numpy as np
 import cv2, PIL
 from cv2 import aruco
-import matplotlib.pyplot as plt
-import matplotlib as mpl
-import pandas as p
 
 aruco_dict = aruco.Dictionary_get(aruco.DICT_6X6_250)
 arucoParams = aruco.DetectorParameters_create()
@@ -35,7 +32,5 @@ while True:
     cv2.imshow("frame", frame)
     if cv2.waitKey(1) & 0xFF == ord("q"):
         break
-plt.plot(goals)
-plt.show()
 vid.release()
 cv2.destroyAllWindows()

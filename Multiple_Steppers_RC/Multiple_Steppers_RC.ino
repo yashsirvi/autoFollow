@@ -1,6 +1,29 @@
 #include <AccelStepper.h>
-
+#include <SPI.h>
+#include <nRF24L01.h>
+#include <RF24.h>
 #include <math.h>
+
+#define PRINT_DEBUG
+#define SIGNAL_TIMEOUT 500 
+
+const uint64_t pipeIn = 0xF9E8F0F0E1LL;
+RF24 radio(8, 9);
+unsigned long lastRecvTime = 0;
+
+
+int  xAxis, yAxis;
+int motorSpeedA = 0;
+int motorSpeedB = 0;
+
+
+struct PacketData
+{
+  byte xAxisValue;
+  byte yAxisValue;
+  byte p1;
+  byte p2;
+} receiverData;
 
 #define dirPin1 2
 #define stepPin1 3
@@ -39,37 +62,42 @@ AccelStepper* steppers[numSteppers] = {
 
 void setup()
 {  
-    for(int i=0;i<numSteppers;i++){
-      stepper[i]->setMaxSpeed(200.0*numSteppings);
-      stepper[i]->setAcceleration(100.0*numSteppings);
-    }
-    // stepper1.setMaxSpeed(200.0*numSteppings);
-    // stepper1.setAcceleration(100.0*numSteppings);
-    // //stepper1.moveTo(-1000000);
-    
-    // stepper2.setMaxSpeed(200.0*numSteppings);
-    // stepper2.setAcceleration(100.0*numSteppings);
-    // //stepper2.moveTo(1000000);
-    
-    // stepper3.setMaxSpeed(200.0*numSteppings);
-    // stepper3.setAcceleration(100.0*numSteppings);
-    // //stepper3.moveTo(1000000); 
+  radio.begin();
+  radio.setDataRate(RF24_250KBPS);
+  radio.openReadingPipe(1, pipeIn);
+  radio.startListening(); //start the radio receiver
 
-    // stepper4.setMaxSpeed(200.0*numSteppings);
-    // stepper4.setAcceleration(100.0*numSteppings);
-    // //stepper4.moveTo(-1000000); 
+  #ifdef PRINT_DEBUG
+  Serial.begin(115200);
+  #endif
+  for(int i=0;i<numSteppers;i++){
+    stepper[i]->setMaxSpeed(200.0*numSteppings);
+    stepper[i]->setAcceleration(100.0*numSteppings);
+  }
 }
  
 void loop()
 {
-    moveMotors(0,100,0);
+     if (radio.isChipConnected() && radio.available())
+  {
+    radio.read(&receiverData, sizeof(PacketData));
+
+    yAxis = receiverData.p1;
+    xAxis = receiverData.p2;
+
+    float LRval = map(xAxis,0,255,-250,250);
+    float FBval = map(yAxis,0,255,-250,250);
+
+    moveMotors(LRval,FBval,0);
+
+  }   
+  
     // 4 microsteppings is working 
 }
 
 float VtoSPS(float v){
   return 200*v/(PI*DIA);
 }
-
 
 void moveMotors(float vx, float vy, float w){
 
@@ -88,6 +116,10 @@ void moveMotors(float vx, float vy, float w){
   stepper2.setSpeed(s2*numSteppings);
   stepper3.setSpeed(s3*numSteppings);
   stepper4.setSpeed(s4*numSteppings);  
+
+  // might have to change move amount 
+  // might have to change direction of movement (move()) as -ve speed is not resulting in reverse motion
+  
 
   for(int i = 0; i < numSteppers; i++){
       steppers[i]->move(-1000); //Check this (might have to change - to + for all or some motors)

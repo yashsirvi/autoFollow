@@ -1,9 +1,5 @@
-#include<math.h>
-
-// Define stepper motor connections and steps per revolution:
-#define numSteppings 32
-
-#define stepsPerRevolution 200*numSteppings
+#include <AccelStepper.h>
+#include <math.h>
 
 #define dirPin1 2
 #define stepPin1 3
@@ -11,127 +7,90 @@
 #define dirPin2 4
 #define stepPin2 5
 
-#define dirPin3 7
-#define stepPin3 6
+#define dirPin3 6
+#define stepPin3 7
 
 #define dirPin4 8
 #define stepPin4 9
 
-//! placeholder values, modify them later
-const float max_x = 10; 
-const float max_y = 10; 
- 
+#define numSteppings 4 //might have to change this to 8/16/32 to increase speed
+
+#define motorInterfaceType 1
+
+#define SPEED 1000 
+#define ACCELERATION 500 
 #define DIA 5.9
 #define PI 3.14159
 
 #define numSteppers 4
 
-  /*
-    max speed = 2.5 m/s = 250 
-    corresponding RPM = 809.262
-    corresponding steps per second = 2697.541
+AccelStepper stepper1 = AccelStepper(motorInterfaceType, stepPin1, dirPin1);
+AccelStepper stepper2 = AccelStepper(motorInterfaceType, stepPin2, dirPin2);
+AccelStepper stepper3 = AccelStepper(motorInterfaceType, stepPin3, dirPin3);
+AccelStepper stepper4 = AccelStepper(motorInterfaceType, stepPin4, dirPin4);
 
-    Calculations: 
+AccelStepper* steppers[numSteppers] = {
+  &stepper1, 
+  &stepper2, 
+  &stepper3, 
+  &stepper4,   
+};
 
-        (sps)/(microsteps) = rps 
-        sps*60/(200*(steps option)) = rpm
-        => 0.3*sps/(steps option) = rpm
-  
-        steps/sec *  0.3 = rpm 
-        rpm * 2pir(cm)/60 = velocity (cm/s)
+void setup()
+{  
+    for(int i=0;i<numSteppers;i++){
+      stepper[i]->setMaxSpeed(200.0*numSteppings);
+      stepper[i]->setAcceleration(100.0*numSteppings);
+    }
+    // stepper1.setMaxSpeed(200.0*numSteppings);
+    // stepper1.setAcceleration(100.0*numSteppings);
+    // //stepper1.moveTo(-1000000);
+    
+    // stepper2.setMaxSpeed(200.0*numSteppings);
+    // stepper2.setAcceleration(100.0*numSteppings);
+    // //stepper2.moveTo(1000000);
+    
+    // stepper3.setMaxSpeed(200.0*numSteppings);
+    // stepper3.setAcceleration(100.0*numSteppings);
+    // //stepper3.moveTo(1000000); 
 
-        sps * 0.3 * pi * d(cm) / 60 = v 
-        sps = v * 60 / (0.3*pi*d) = 200v/pi*d
-
-        Observations: 
-          on doubling step, delayMicroSeconds amount got halved 
-          example: for 32 steppings, 12.5 worked best 
-
-          number of iterations of for loop controls time of spinning / no. of revolutions 
-        
-  */
-
-
-void setup() {
-  // Declare pins as output:
-  pinMode(stepPin1, OUTPUT);
-  pinMode(dirPin1, OUTPUT);
-  
-  pinMode(stepPin2, OUTPUT);
-  pinMode(dirPin2, OUTPUT);
-
-  pinMode(stepPin3, OUTPUT);
-  pinMode(dirPin3, OUTPUT);
-  
-  pinMode(stepPin4, OUTPUT);
-  pinMode(dirPin4, OUTPUT);
-
+    // stepper4.setMaxSpeed(200.0*numSteppings);
+    // stepper4.setAcceleration(100.0*numSteppings);
+    // //stepper4.moveTo(-1000000); 
+}
+ 
+void loop()
+{
+    moveMotors(0,100,0);
+    // 4 microsteppings is working 
 }
 
-void loop() {
-
-  float x_from_pi = 5.1; //random placeholder constant, replace it
-  float y_from_pi = 6.2; // -- "" -- 
-
-  moveMotors(x_from_pi,y_from_pi,0);
-
-}
-
-void move(int stepPin, int dirPin, int pulses, int speed, int direction){
-  
-  // direction = 1 -> clockwise
-  // direction = 2 -> anticlockwise
-  digitalWrite(dirPin, direction);
-
-  // 1 iteration of for loop = 1 microstep of motor
-
-  // 1 microstep -> 800*K/numSteppings microseconds 
-  // 200*numSteppings microsteps = 1 revolution -> 800K microseconds
-  // 1 revolution in 800K microseconds 
-  // (10^6/800K) revolutions per second 
-  //  10^4*pi*d/(8K) cm (or m) per second
-  // 
-  
-  float k = 1250*PI*DIA/speed;
-
-  // TODO: adjust speed
-  // also try stepper.step() method of accelstepper
-
-   for (int i = 0; i < pulses; i++) {
-    // These four lines result in 1 step:
-    digitalWrite(stepPin, HIGH);
-    delayMicroseconds(400*k/numSteppings);
-    digitalWrite(stepPin, LOW);
-    delayMicroseconds(400*k/numSteppings);
-  }
-
-}
-
-int dir(float speed){
-  return speed>0;
-}
-
-void moveMotors(float x,float y,float w){
-
-  float v1 = 2*(-sqrt(2)*vx+sqrt(2)*vy+0.5*DIA*w)/4; 
-  float v2 = 2*(-sqrt(2)*vx-sqrt(2)*vy+0.5*DIA*w)/4;
-  float v3 = 2*(sqrt(2)*vx-sqrt(2)*vy+0.5*DIA*w)/4;
-  float v4 = 2*(sqrt(2)*vx+sqrt(2)*vy+0.5*DIA*w)/4;
-
-  // these are like the proportionality constants 
-  // speed can be assigned by multiplying it with a suitable constant 
-  // suitable constant = ?
-  
-  float suitable_constant;
-  int pulses=10*stepsPerRevolution;
-  
-  move(dirPin1,stepPin1,pulses,v1,dir(v1));
-  move(dirPin2,stepPin2,pulses,v2,dir(v2));
-  move(dirPin3,stepPin3,pulses,v3,dir(v3));
-  move(dirPin4,stepPin4,pulses,v4,dir(v4));
-
+float VtoSPS(float v){
+  return 200*v/(PI*DIA);
 }
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void moveMotors(float vx, float vy, float w){
 
+  // x, y, w in cm/s (w is most probably 0)
+  float v1 = (-sqrt(2)*vx+sqrt(2)*vy+0.5*DIA*w)/4; 
+  float v2 = (-sqrt(2)*vx-sqrt(2)*vy+0.5*DIA*w)/4;
+  float v3 = (sqrt(2)*vx-sqrt(2)*vy+0.5*DIA*w)/4;
+  float v4 = (sqrt(2)*vx+sqrt(2)*vy+0.5*DIA*w)/4;
+
+  float s1 = VtoSPS(v1);
+  float s2 = VtoSPS(v2);
+  float s3 = VtoSPS(v3);
+  float s4 = VtoSPS(v4);
+
+  stepper1.setSpeed(s1*numSteppings);
+  stepper2.setSpeed(s2*numSteppings);
+  stepper3.setSpeed(s3*numSteppings);
+  stepper4.setSpeed(s4*numSteppings);  
+
+  for(int i = 0; i < numSteppers; i++){
+      steppers[i]->move(-1000); //Check this (might have to change - to + for all or some motors)
+      steppers[i]->runSpeed();
+    }
+
+}

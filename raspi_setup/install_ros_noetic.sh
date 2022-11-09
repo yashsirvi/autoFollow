@@ -12,8 +12,6 @@ sudo apt install python3-roslaunch
 source /opt/ros/noetic/setup.bash
 echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
 source ~/.bashrc
-sudo apt install python3-rosdep python3-rosinstall python3-rosinstall-generator python3-wstool build-essential
-sudo apt install python3-roslaunch
 sudo groupadd -f --system gpio
 sudo groupadd -f --system i2c
 sudo usermod -a -G gpio ubuntu

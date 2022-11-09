@@ -1,5 +1,4 @@
 #!/bin/sh
-# wget -c https://raw.githubusercontent.com/qboticslabs/ros_install_noetic/master/ros_install_noetic.sh && chmod +x ./ros_install_noetic.sh && ./ros_install_noetic.sh
 sudo apt-get update
 sudu apt-get upgrade
 sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
@@ -16,5 +15,6 @@ source ~/.bashrc
 sudo apt install python3-rosdep python3-rosinstall python3-rosinstall-generator python3-wstool build-essential
 sudo apt install python3-roslaunch
 sudo groupadd -f --system gpio
-sudo usermod -a -G gpio pi
-sudo usermod -a -G i2c pi
+sudo groupadd -f --system i2c
+sudo usermod -a -G gpio ubuntu
+sudo usermod -a -G i2c ubuntu

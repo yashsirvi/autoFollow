@@ -7,4 +7,4 @@ sudo ufw allow ssh
 sudo systemctl start ssh
 sudo systemctl status ssh
 ifconfig
-
+echo "sudo systemctl enable ssh;sudo ufw allow ssh;sudo systemctl start ssh" >> ~/.bashrc

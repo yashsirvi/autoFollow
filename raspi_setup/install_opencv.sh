@@ -22,4 +22,5 @@ cmake -D CMAKE_BUILD_TYPE=RELEASE \
     -D INSTALL_PYTHON_EXAMPLES=OFF \
     -D BUILD_EXAMPLES=OFF ..
 make –j4
-sudo apt-get install libopencv-devpython-opencv
+make -j1
+sudo apt-get install libopencv-dev python3-opencv

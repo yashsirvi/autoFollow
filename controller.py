@@ -26,12 +26,17 @@ pub = rospy.PublisherI("/cmd_vel", Twist, queue_size=1)
 velocity = Twist()
 r = rospy.Rate(10)
 
+velocity.linear.y = 0
+velocity.linear.z = 0
+velocity.angular.x = 0
+velocity.angular.y = 0
+
 while not rospy.is_shutdown():
     if abs(theta) > 0.1:
         velocity.linear.x = 0.0
         velocity.angular.z = 0.3
     else:
-        speed.linear.x = 0.5
-        speed.angular.z = 0.0
+        velocity.linear.x = 0.5
+        velocity.angular.z = 0.0
     pub.publish(velocity)
     r.sleep()
